@@ -3249,9 +3249,13 @@ var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/light-v9',
     center: [-99.9, 41.5],
-    zoom: 3
+    zoom: 3,
+    // minzoom: 3
 });
 
+//  TODO: https://www.mapbox.com/help/adjust-tileset-zoom-extent/
+// https://github.com/mapbox/mapbox-gl-js/issues/5918#issuecomment-356555015
+// https://www.mapbox.com/mapbox-gl-js/example/disable-scroll-zoom/
 
 var newJson = data.map(datum => ({
   "name" : datum[0],
@@ -3265,19 +3269,15 @@ var newJson = data.map(datum => ({
 
 map.on('load', function() {
 
-    // Add source for state polygons hosted on Mapbox, based on US Census Data:
-    // https://www.census.gov/geo/maps-data/data/cbf/cbf_state.html
     map.addSource("counties", {
         type: "vector",
-        url: "mapbox://openideo.8u5c8bp4"
+        url: "mapbox://openideo.8u5c8bp4",
     });
 
-    // changed based on recommendation
-    //: https://github.com/mapbox/mapbox-gl-js/issues/5963#issuecomment-356046946
-    // https://www.mapbox.com/mapbox-gl-js/style-spec/#expressions-decision
+    // changed based on article
+    //: https://www.mapbox.com/mapbox-gl-js/example/updating-choropleth/
+
   var expression = ["match", ["get", "GEOID"]];
-  // var expression = ["case", []]
-  // Calculate color for each state based on the unemployment rate
   var mapCat = newJson.map(function(row) {
       // var green = (row["population"] / maxValue) * 255;
       var cor = row["population"]
@@ -3305,6 +3305,7 @@ map.on('load', function() {
         "type": "fill",
         "source": "counties",
         "source-layer": "test-3ztrm1",
+        // "minzoom": 3,
         "paint": {
             "fill-color": expression,
             // 'fill-opacity': 0.75
